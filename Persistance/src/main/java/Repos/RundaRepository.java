@@ -2,14 +2,9 @@ package Repos;
 
 import DTO.Clasament;
 import DTO.RaspunsRunda;
-import Model.Jucator;
-import Model.Raspuns;
 import Model.Runda;
-import org.springframework.stereotype.Component;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,17 +17,6 @@ public class RundaRepository {
     private JDBC utils;
     public RundaRepository(Properties props){
         utils=new JDBC(props);
-    }
-    private Properties getProps(){
-        Properties props = new Properties();
-        try {
-            props.load(new FileReader("bd.config"));
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return props;
     }
 
     public int getPunctajFinal(int idJucator,int idJoc) throws RepoException{
@@ -87,23 +71,8 @@ public class RundaRepository {
         }
         return result;
     }
-    public int size() throws RepoException{
-
-        Connection con=utils.getConnection();
-        try(PreparedStatement preStmt=con.prepareStatement("select count(*) as [SIZE] from Runda ")) {
-            try(ResultSet result = preStmt.executeQuery()) {
-                if (result.next()) {
-                    return result.getInt("SIZE");
-                }
-            }
-        }catch(SQLException ex){
-            throw new RepoException(ex.getMessage());
-        }
-        return 0;
-    }
 
     public void save(Runda entity)throws RepoException {
-
         Connection con=utils.getConnection();
         try(PreparedStatement preStmt=con.prepareStatement("insert into Runda values (?,?,?,?,?,?)")){
             preStmt.setInt(1,entity.getJucatorId());
@@ -118,8 +87,6 @@ public class RundaRepository {
         }
 
     }
-
-
     public int getPunctajForPlayer(int idJucator,int nrRunda,int idJoc) throws RepoException{
 
         Connection con=utils.getConnection();

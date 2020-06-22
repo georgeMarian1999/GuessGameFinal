@@ -49,33 +49,34 @@ public class CuvintePropuseRepository {
     }
     public int searchPropunere(String propunere,int idJucPropunere,int idJoc) throws RepoException{
         Connection con=utils.getConnection();
-        try(PreparedStatement preparedStatement=con.prepareStatement("Select CuvPropus FROM CuvintePropuse where idJuc=? AND idJoc=?")){
-            preparedStatement.setInt(1,idJucPropunere);
-            preparedStatement.setInt(2,idJoc);
-            try(ResultSet resultSet=preparedStatement.executeQuery()){
-                if(resultSet.next()){
-                    String cuvProp=resultSet.getString("CuvPropus");
-                    if(cuvProp.equals(propunere)){
-                        return 5;
-                    }
-                    else{
-                    char prop=propunere.charAt(0);
-                    int count = 0;
+        if(!propunere.isEmpty()) {
+            try (PreparedStatement preparedStatement = con.prepareStatement("Select CuvPropus FROM CuvintePropuse where idJuc=? AND idJoc=?")) {
+                preparedStatement.setInt(1, idJucPropunere);
+                preparedStatement.setInt(2, idJoc);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String cuvProp = resultSet.getString("CuvPropus");
+                        if (cuvProp.equals(propunere)) {
+                            return 5;
+                        } else {
+                            char prop = propunere.charAt(0);
+                            int count = 0;
 
-                    for (int i = 0; i < cuvProp.length(); i++) {
-                        if (cuvProp.charAt(i) == prop) {
-                            count++;
+                            for (int i = 0; i < cuvProp.length(); i++) {
+                                if (cuvProp.charAt(i) == prop) {
+                                    count++;
+                                }
+                            }
+                            return count;
                         }
-                    }
-                        return count;
-                    }
 
+                    } else return 0;
                 }
-                else return 0;
+            } catch (SQLException ex) {
+                throw new RepoException(ex.getMessage());
             }
-        }catch (SQLException ex){
-            throw new RepoException(ex.getMessage());
         }
+        else return 0;
     }
     public int getMaxId()throws RepoException{
         Connection con=utils.getConnection();
